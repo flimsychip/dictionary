@@ -15,7 +15,7 @@ const int quit_menu_option = QUIT;
 const int min_dict_option = 1;
 const int max_dict_option = 7;
 const double AVERAGE_WORD_LENGTH = 7;   // assumption about size of words in dictionaries
-const double CUSHION = 1.25;				    // how much beyond projected size should we reserve
+const double CUSHION = 1.25;            // how much beyond projected size should we reserve
 const unsigned int DEFAULT_SIZE = 1000; // if we can't estimate, what default value should we use
 
 /* function prototypes */
@@ -244,9 +244,9 @@ void writeToFile(const vector<string> &vect) {
 /* use C-library to get filesize in characters; overloaded to take either C or C++ string
  * getFileSize() takes the name of the file and returns the filesize in characters
  *
- *	adapted from examples in K&R and online
+ * adapted from examples in K&R and online
  *
- *	(K&R) is reference to book: "The ANSI C Programming Language" by Brian Kernighan and Dennis Ritchie
+ * (K&R) is reference to book: "The ANSI C Programming Language" by Brian Kernighan and Dennis Ritchie
  */
 double getFileSize(const string &filename) {
 	return getFileSize(filename.c_str());
@@ -255,8 +255,8 @@ double getFileSize(const string &filename) {
 double getFileSize(const char* filename) {
    struct stat fileInfo;
    int fail = stat(filename, &fileInfo);
-   if(fail == -1) {				  // returns -1 if there is an error (K&R)
-      return fail;					// for instance, if the file does not exist
+   if(fail == -1) {         // returns -1 if there is an error (K&R)
+      return fail;          // for instance, if the file does not exist
    } 
    return fileInfo.st_size; // st_size is file size in characters (K&R)
 }
