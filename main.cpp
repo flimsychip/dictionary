@@ -22,10 +22,14 @@ const unsigned int DEFAULT_SIZE = 1000; // if we can't estimate, what default va
 // helper
 int getMenuChoice();
 int getDictChoice(const int currDict);
-vector<string>::const_iterator findWord (const string word, const vector<string> &vect);
 // actions
 int countWords(const vector<string> &vect);
 void printToScreen(const vector<string> &vect);
+vector<string>::const_iterator findWord(const string word, const vector<string> &vect);
+int bubbleSort(vector<string> &vect);
+int selectionSort(vector<string> &vect);
+vector<string>::const_iterator binarySearch(string word, const vector<string> &vect);
+vector<string>::const_iterator binarySearch(string word, const vector<string> &vect, vector<string>::const_iterator startIT, vector<string>::const_iterator endIT);
 void promptFind(const string word, vector<string> &vect, const Actions mode); // handles linear search and delete
 bool loadDict(const string filename, vector<string> &vect, bool verbose = false);
 void writeToFile(const vector<string> &vect);
@@ -62,8 +66,20 @@ int main() {
             break;
          case SWAP:
          case BUBBLE_SORT:
+	    cout << "sorting..." << endl;
+            cout << "        " << bubbleSort(dict) << " swaps made by Bubble Sort" << endl;
+            cout << "                           ...Done!" << endl;
+            break;
          case SELECTION_SORT:
+            cout << "sorting..." << endl;
+            cout << "        " << selectionSort(dict) << " swaps made by Selection Sort" << endl;
+            cout << "                           ...Done!" << endl;
+            break;
          case BINARY_SEARCH:
+	    cout << "Enter a word to find: ";
+            cin >> choiceStr;
+            promptFind(choiceStr, dict, BINARY_SEARCH);
+            break;
          case INSERT:
          case MERGE:
             cout << "Coming soon!" << endl;
@@ -123,16 +139,6 @@ int getDictChoice(const int currDict) {
    return choice;
 }
 
-vector<string>::const_iterator findWord(const string word, const vector<string> &vect) {
-   vector<string>::const_iterator IT;
-   for(IT = vect.begin(); IT != vect.end(); IT++) {
-      if(*IT == word) {
-         return IT;   
-      }
-   }
-   return vect.end();
-}
-
 int countWords(const vector<string> &vect) {
    int count = 0;
    vector<string>::const_iterator IT;
@@ -149,9 +155,90 @@ void printToScreen(const vector<string> &vect) {
    }
 }
 
+vector<string>::const_iterator findWord(const string word, const vector<string> &vect) {
+   vector<string>::const_iterator IT;
+   for(IT = vect.begin(); IT != vect.end(); IT++) {
+      if(*IT == word) {
+         return IT;   
+      }
+   }
+   return vect.end();
+}
+
+int bubbleSort(vector<string> &vect) {
+   vector<string>::iterator outerIT;
+   vector<string>::iterator innerIT;
+   string temp;
+   int swaps = 0;
+   bool swapped = false;
+   
+   for(outerIT = vect.begin(); outerIT != vect.end() - 1; outerIT++) {
+      for(innerIT = vect.begin(); innerIT != vect.begin() + (vect.end() - 1 - outerIT); innerIT++) { // last place gets sorted every pass
+         if(*innerIT > *(innerIT + 1)) {
+            temp = *innerIT;
+            *innerIT = *(innerIT + 1);
+            *(innerIT + 1) = temp;
+            swaps++;
+            swapped = true;
+         }
+      }
+      if(!swapped) { break; }
+      swapped = false;
+   }
+   return swaps;
+}
+
+int selectionSort(vector<string> &vect) {
+   vector<string>::iterator outerIT;
+   vector<string>::iterator innerIT;
+   vector<string>::iterator min;
+   string temp;
+   int swaps = 0;
+   
+   for(outerIT = vect.begin(); outerIT != vect.end(); outerIT++) {
+      min = outerIT;
+      for(innerIT = outerIT + 1; innerIT != vect.end(); innerIT++) {
+         if(*innerIT < *min) {
+            min = innerIT;   
+         }
+      }
+      temp = *min;
+      *min = *outerIT;
+      *outerIT = temp;
+      swaps++;
+   }
+   return swaps;
+}
+
+vector<string>::const_iterator binarySearch(string word, const vector<string> &vect) {
+   return binarySearch(word, vect, vect.begin(), vect.end());
+}
+
+vector<string>::const_iterator binarySearch(string word, const vector<string> &vect, vector<string>::const_iterator startIT, vector<string>::const_iterator endIT) {
+   if(startIT == endIT) { return vect.end(); } // check when to exit
+   vector<string>::const_iterator midIT = startIT + ((endIT - startIT) / 2);
+   if(*midIT == word) { return midIT; } // base case
+   if(*midIT > word) {
+      return binarySearch(word, vect, startIT, midIT);
+   } else {
+      return binarySearch(word, vect, midIT + 1, endIT);
+   }
+}
+
 void promptFind(const string word, vector<string> &vect, const Actions mode) {
+   vector<string>::const_iterator IT;
    cout << "Your word was '" << word << "'." << endl;
-   vector<string>::const_iterator IT = findWord(word, vect);
+   
+   switch(mode) {
+      case LINEAR_SEARCH:
+      case DELETE:
+         IT = findWord(word, vect);
+         break;
+      case BINARY_SEARCH:
+         IT = binarySearch(word, vect);
+         break;
+   }
+   
    if(IT == vect.end()) {
       cout << "We did not find your word." << endl;
       return;
@@ -159,6 +246,7 @@ void promptFind(const string word, vector<string> &vect, const Actions mode) {
    
    switch(mode) {
       case LINEAR_SEARCH:
+      case BINARY_SEARCH:
          if(IT == vect.begin()) {
             cout << "It is the first word." << endl;
          } else {
