@@ -30,7 +30,7 @@ int bubbleSort(vector<string> &vect);
 int selectionSort(vector<string> &vect);
 vector<string>::const_iterator binarySearch(string word, const vector<string> &vect);
 vector<string>::const_iterator binarySearch(string word, const vector<string> &vect, vector<string>::const_iterator startIT, vector<string>::const_iterator endIT);
-void promptFind(const string word, vector<string> &vect, const Actions mode); // handles linear search and delete
+void promptFind(const string word, vector<string> &vect, const Actions mode); // handles linear, binary search and delete
 bool loadDict(const string filename, vector<string> &vect, bool verbose = false);
 void writeToFile(const vector<string> &vect);
 // given
